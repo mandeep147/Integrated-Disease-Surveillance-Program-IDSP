@@ -1,0 +1,22 @@
+body {
+    padding: 50px;
+    font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+    height: 500px;
+}
+
+a {
+    color: #00B7FF;
+}
+
+.map-div {
+    height: 100%;
+    height: 100%;
+}
+
+.main-div {
+    height: 45%;
+}
+
+ng-map {
+    height:30em;
+}

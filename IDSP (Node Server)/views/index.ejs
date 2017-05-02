@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+  <head>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+      <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+      
+      <link rel="stylesheet" href="http://www.w3schools.com/lib/w3-theme-indigo.css">
+    <meta charset="utf-8">
+       <link rel="stylesheet" href="http://www.w3schools.com/lib/w3.css">
+    <title>IDSM</title>
+      <script src="locations.js"></script>
+       <script src="latlng.js"></script>
+    <style>
+      
+        nav {
+    float: left;
+    max-width: 160px;
+    margin: 0;
+    padding: 1em;
+}
+        
+
+.dropbtn {
+    background-color: #ff0000;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+}
+
+.dropdown-content a {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {background-color: #f1f1f1}
+
+.dropdown:hover .dropdown-content {
+    display: block;
+}
+
+.dropdown:hover .dropbtn {
+    background-color: #3e8e41;
+}
+      #map {
+        height: 100%;
+      }
+      /* Optional: Makes the sample page fill the window. */
+      html,body {
+        height: 100%;
+        width:100%%;
+        margin: 0;
+        padding: 0;
+      }
+      #floating-panel {
+        position: absolute;
+        top: 10px;
+        left: 25%;
+        z-index: 5;
+        background-color: #fff;
+        padding: 5px;
+        border: 1px solid #999;
+        text-align: center;
+        font-family: 'Roboto','sans-serif';
+        line-height: 30px;
+        padding-left: 10px;
+      }
+      #floating-panel {
+        background-color: #fff;
+        border: 1px solid #999;
+        left: 25%;
+        padding: 5px;
+        position: absolute;
+        top: 10px;
+        z-index: 5;
+      }
+      .foo {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin: 5px;
+  border: 1px solid rgba(0, 0, 0, .2);
+}
+
+        
+.blue {
+  background: #13b4ff;
+}
+
+.purple {
+  background: #ab3fdd;
+}
+
+.wine {
+  background: #ae163e;
+}
+.yellow {
+background-color: yellow;
+        
+}.pink {
+  background-color: deeppink;
+}.green {
+  background-color: green;
+}.red {
+  background-color: red;
+}.gray {
+  background-color:gray;
+}.lightgreen {
+  background-color:lightgreen;
+}
+ .orange {
+  background-color:orange;
+}
+ .purple {
+  background-color:purple;
+}
+  .brown {
+  background-color:saddlebrown;
+}
+ 
+    </style>
+  </head>
+
+  <body>
+ <div class="w3-container w3-theme w3-card-2">
+   <h1><center><b>Integrated Disease Surveillance Management</b></center></h1><br />
+</div>
+   <nav>
+    <label for="diseases">disease:</label>
+    <input id="diseases">
+  
+  <label for="locations">Locations: </label>
+  <input id="locations">
+<div>Date: <input type="text" id="datepicker"></div>
+  
+      <div id="container">
+            <button id="clickme" onClick="createHeatmap();">Check</button>
+    
+        </div>
+   </nav>     
+<div id="map" style="width:55%; height:65%; margin-top: 120px; margin-left: 300px;" ></div>
+
+     <center>
+          <div class="foo gray"></div><h6 style="float:left">less than 1</h6>
+          <div class="foo brown"></div><h6 style="float:left">1-10</h6>
+          <div class="foo orange"></div><h6 style="float:left">10-20</h6>
+          <div class="foo yellow"></div><h6 style="float:left">20-30</h6>
+          <div class="foo lightgreen"></div><h6 style="float:left">30-40</h6>
+        <div class="foo green"></div><h6 style="float:left">40-50</h6>
+        <div class="foo blue"></div><h6 style="float:left">50-60</h6>
+        <div class="foo pink"></div><h6 style="float:left">60-70</h6>
+        <div class="foo purple"></div><h6 style="float:left">70-80</h6>
+         <div class="foo wine"></div><h6 style="float:left">80-90</h6>
+      <div class="foo red"></div><h6 style="float:left">90-100</h6>
+         </center>
+      <script>
+        var diseases=["Malaria",
+"Tuberculosis",
+"Typhoid",
+"Chikungunya",
+"Dengue",
+"Japanese Encephalitis",
+"Arsenicosis",
+"Cholera",
+"Hepatitis E",
+"Measles",
+"Hepatitis A"];
+        
+        
+        
+     $( function() {
+     
+    $( "#locations" ).autocomplete({
+      source:locations
+    });
+  } );
+     $( function() {
+         
+     
+    $( "#diseases" ).autocomplete({
+      source:diseases
+    });
+  } );
+      $( function() {
+    $( "#datepicker" ).datepicker();
+  } );
+      var map, heatmap;
+function initMap() {
+   var india = {lat: 20.5937, lng: 78.9629};
+     map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 4,
+          center: india,
+         mapTypeId: google.maps.MapTypeId.Map
+        });
+     heatmap = new google.maps.visualization.HeatmapLayer({
+        data: getPoints("CENTRAL DELHI"),
+        
+        });
+        heatmap.setMap(map);
+   heatmap.set('radius', heatmap.get('radius') ? null : 20); 
+}  
+  
+ function changeGradient(i)
+          
+          {    var gradient;
+               if(i<=1) {
+                     gradient = ['rgba(0, 255, 255, 0)','rgba(128, 128, 128, 1)','rgba(0, 0, 0, 1)']
+                   heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               if(i>1&&i<=10){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(165,42,42, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>10&&i<=20){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba( 255, 165,0, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>20&&i<=30){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(255, 255, 0, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>30&&i<=40){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(50, 255, 20, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>40&&i<=50){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(0, 128, 0, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>50&&i<=60){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(0, 0, 255, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>60&&i<=70){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(255, 20, 147, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>70&&i<=80){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(218, 12, 238, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+              
+                if(i>80&&i<=90){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(154, 47, 65, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+                if(i>90&&i<=100){
+                    gradient = ['rgba(0, 255, 255, 0)','rgba(255, 0, 0, 1)','rgba(0, 0, 0, 1)']
+                    heatmap.set('gradient', heatmap.get('gradient') ? null : gradient);}
+               
+           
+           
+               
+          }
+function createHeatmap(){
+      heatmap.setMap(null);
+        var loc=document.getElementById("locations").value;
+        var disease=diseases.indexOf(document.getElementById("diseases").value)+1;   
+        var locationnum=locations.indexOf(loc)+1; 
+        var dateval=document.getElementById("datepicker").value;
+        dateval = dateval.replace(/\b0(?=\d)/g, '');
+        var url1="http://35.165.4.158:3000/predict?location=";
+        var result=url1.concat(locationnum,"&disease=",disease,"&date=",dateval);
+             
+                      $.ajax({
+                               type: "GET",
+                               url: result,
+                               crossDomain: true,
+                                dataType: 'jsonp',
+                               success:function(data){
+                               var intensity=data*100;
+                                    heatmap = new google.maps.visualization.HeatmapLayer({
+                                        data: getPoints(loc)
+                                         
+                                        });
+                                   changeGradient(intensity);
+                                        heatmap.setMap(map);
+                                     heatmap.set("center",heatmap.get('center')?null: center);
+                                    heatmap.set('radius', heatmap.get('radius') ? null : 40);
+                              },
+                               error: function(e) {
+                                 alert('Error: ' + e.message);
+                               }
+                            });
+                    }
+    
+    
+       
+
+ function getPoints( loc) {
+     
+          var lat = latlng[loc].lat;
+          var lng = latlng[loc].lng;
+        return [
+          new google.maps.LatLng(lat, lng)
+        
+      
+        ];
+      }
+
+    </script>
+    <script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDnaOWjzblH3y-J8X-zuLQLN5SIf6E5ZiU&libraries=visualization&callback=initMap">
+    </script>
+  </body>
+</html>
