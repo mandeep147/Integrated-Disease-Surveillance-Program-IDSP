@@ -275,7 +275,7 @@ function createHeatmap(){
         var locationnum=locations.indexOf(loc)+1; 
         var dateval=document.getElementById("datepicker").value;
         dateval = dateval.replace(/\b0(?=\d)/g, '');
-        var url1="http://35.165.4.158:3000/predict?location=";
+        var url1="http://idspserver.herokuapp.com/predict?location=";
         var result=url1.concat(locationnum,"&disease=",disease,"&date=",dateval);
              
                       $.ajax({
